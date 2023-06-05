@@ -1,0 +1,45 @@
+
+  .scanner-frame {
+    position: absolute;
+    border: 2px solid red;    
+  }
+  .vidcen{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+ @media (max-width: 567px) {
+    /* Small screens */
+    .scanner-frame {
+      height: 150px;
+      width: 150px;
+    }
+    .vid{
+        height: 325px;
+        width: 325px;
+      }
+  }
+
+  @media (max-width:767px ) {
+    /* Small screens */
+    .scanner-frame {
+      height: 250px;
+      width: 250px;
+    }
+    .vid{
+      height: 425px;
+      width: 425px;
+    }
+  }
+  @media (min-width: 768px) {
+    /* Large screens */
+    .scanner-frame {
+      height: 400px;
+      width: 400px;
+    }
+    .vid{
+        height: 650px;
+        width: 650px;
+      }
+  }

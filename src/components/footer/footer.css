@@ -1,0 +1,15 @@
+.FooterContainer{
+    height: 50px;
+    background-color: #3a3075;
+    display: flex;
+    justify-content: center;
+}
+
+.navbtn{
+    padding: 5px 10px;
+    margin-left: 20px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+}

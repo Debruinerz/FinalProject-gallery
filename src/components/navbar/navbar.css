@@ -1,0 +1,44 @@
+
+.nav {
+    background-color: purple;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .navList {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navListItem {
+    margin-right: 10px;
+  }
+  
+  .navListItem:last-child {
+    margin-right: 0;
+  }
+  
+  .navListItem a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 20px;
+    background-color: purple;
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+  }
+  
+  .navListItem a:hover {
+    background-color: #8A2BE2;
+  }
+  
+  .navListItem a.active {
+    outline: white solid 2px;
+  }
+  
