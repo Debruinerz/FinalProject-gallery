@@ -19,23 +19,33 @@
 
 // export default Header
 
-import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
-import './header.css'
+import React, { useState, useContext } from 'react';
+import { NavLink} from 'react-router-dom';
+import { AuthContext } from '../../pages/auth/Auth';
+import './header.css';
 
 const Navbar = () => {
-  const [showNavbar, setShowNavbar] = useState(false)
+  const [showNavbar, setShowNavbar] = useState(false);
+  const { loggedIn,logout } = useContext(AuthContext); 
+  const [darkMode, setDarkMode] = useState(false);
 
   const handleShowNavbar = () => {
-    setShowNavbar(!showNavbar)
-  }
+    setShowNavbar(!showNavbar);
+  };
+
+  const handleLogout = () => {
+    logout(); 
+    window.location.reload();
+  };
+
+  const handleToggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  }; 
 
   return (
-    <nav className="navbar">
+    <nav className={`navbar ${darkMode ? 'dark-mode' : ''}`}>
       <div className="container">
-        <div className="logo">
-          cdcdc
-        </div>
+        <div className="logo">EVENT EIRE</div>
         <div className="menu-icon" onClick={handleShowNavbar}>
           Menu
         </div>
@@ -45,22 +55,44 @@ const Navbar = () => {
               <NavLink to="/">Home</NavLink>
             </li>
             <li>
-              <NavLink to="/blog">Blog</NavLink>
+              <NavLink to="/qrReader">QR READER</NavLink>
             </li>
             <li>
-              <NavLink to="/projects">Projects</NavLink>
+              <NavLink to="/contactUs">CONTACT US</NavLink>
             </li>
             <li>
-              <NavLink to="/about">About</NavLink>
-            </li>
-            <li>
-              <NavLink to="/contact">Contact</NavLink>
+              <NavLink to="/admin">ADMIN</NavLink>
             </li>
           </ul>
+          <div className="login-logout">
+          {loggedIn !== null ? ( // If user is logged in, display username and Logout button
+            <>
+              <span>logged: {loggedIn}</span> {/* Display the username */}
+              <NavLink to="/">
+              <button onClick={handleLogout}>Logout</button>
+              </NavLink>
+            </>
+          ) : ( // If user is not logged in, display Login and Signup buttons
+            <>
+              <NavLink to="/login">
+                <button>Login</button>
+              </NavLink>
+              
+              <NavLink to="/signup">
+                <button>  Signup</button>
+              </NavLink>
+            </>
+          )}
+          </div>
+          <div className="dark-mode-button">
+            <button onClick={handleToggleDarkMode}>
+              Toggle Dark Mode
+            </button>
+          </div>
         </div>
       </div>
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

@@ -4,7 +4,7 @@ import ContactUs from "./pages/contact/Contact"
 import QrReader from "./pages/qrreader/Qr"
 import Signup from "./pages/user/Signup"
 import Login from "./pages/user/Login"
-import Dynamic from "./pages/dynamic/DataContent"
+import DataContent from './pages/dynamic/DataContent'; // Update the import
 import Admin from "./pages/admin/Admin"
 
 
@@ -18,7 +18,7 @@ function App() {
         <Route path="/qrReader" element={<QrReader/>}/>
         <Route path="/signup" element={<Signup/>}/>
         <Route path="/login" element={<Login/>}/>
-        <Route path="/dynamic/id" element={<Dynamic/>}/>
+        <Route path="/DataContent/:title" element={<DataContent />} />
         <Route path="/admin" element={<Admin/>}/>
       </Routes>
     </BrowserRouter>

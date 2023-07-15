@@ -9,8 +9,11 @@ const Qr = () => {
     <div>
       
       <Header/>
-      <Navbar/>
+
+
       <QrScan/>
+
+      
       <Footer/>
     </div>
   )
