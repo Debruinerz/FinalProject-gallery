@@ -1,21 +1,17 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import './footer.css'
+import React, { useContext } from 'react';
+import { AuthContext } from '../../pages/auth/Auth';
+import './footer.css';
 
 const Footer = () => {
+  const { darkMode } = useContext(AuthContext);
+
   return (
-    <div className='FooterContainer'>
-
-            <div className='FooterItems'>
-                <br/>
-                <Link to="/home" className='navbtn'> HOME </Link>
-
-                <Link to="/qrReader" className='navbtn'> QR READER </Link>
-                <Link to="/contactUs" className='navbtn'> CONTACT US </Link>
-            </div>
+    <div className={`footer ${darkMode ? 'dark-mode' : ''}`}>
+      <div className="logo">
+        <h2>EVENT EIRE</h2>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-
-export default Footer
+export default Footer;

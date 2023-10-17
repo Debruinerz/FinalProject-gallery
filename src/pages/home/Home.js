@@ -1,78 +1,15 @@
-// import React from 'react';
-// import Header from '../../components/header/Header';
-// import Navbar from '../../components/navbar/Navbar';
-// import Footer from '../../components/footer/Footer';
-// import FontSizeChanger from '../../components/fontSizeChanger/FontSizeChanger';
-// import TextToSpeech from "../../components/textToSpeech/TextToSpeech";
-// import './home.css';
-
-// import { useState, useEffect } from 'react';
-
-// const Home = () => {
-//   const targetId = 'targetId';
-//   const [well, setWell] = useState('');
-
-//   useEffect(() => {
-//     const targetElement = document.getElementById(targetId);
-//     if (targetElement) {
-//       setWell(targetElement.innerText);
-//     }
-//   }, [targetId]);
-
-//   //const ok = "well hell bell";
-//   //cont ex = document.getElementsByClassName()
-//   return (
-//     <div>
-//       <Header />
-//       <Navbar />
-//       <FontSizeChanger initialFontSize={16} targetSelector=".home-text" />
-      
-//       <div>
-//         <h1 >Home</h1>
-//       </div>
-//       <div>
-//         <h3 id={targetId}>
-//           EventEire is a newly established company with the aims to enable those with disabilities 
-//         </h3>
-//       </div>
-//       <div className="home-text">possible past and future events</div>
-//       <div className='eventsWrapper'> 
-        
-//         <div className='currentCont'> 
-//            <h4> currently on show</h4>
-//            <div> title </div>
-//            <div> image </div>
-//            <div> text </div>
-//         </div>
-
-//         <div className='futurecont'> 
-//           <h4> what to come in the future </h4>
-//            <div> title </div>
-//            <div> image </div>
-//            <div> text </div>
-//         </div>
-
-//       </div>
-//       <TextToSpeech text={well} />
-//       <div className="home-text">opening times</div>
-//       <Footer />
-//     </div>
-//   );
-// };
-// export default Home;
-
-
-
 import React, { useState, useEffect } from 'react';
 import Header from '../../components/header/Header';
-
+import Footer from "../../components/footer/Footer";
+import { useDarkMode } from '../../pages/darkmode/DarkMode';
 import FontSizeChanger from '../../components/fontSizeChanger/FontSizeChanger';
 import TextToSpeech from '../../components/textToSpeech/TextToSpeech';
 import './home.css';
+import Weather from  '../../components/weather/weather';
+
 
 const Home = () => {
-  //const [imageName, setImageName] = useState('');
-  const [well, setWell] = useState('');
+
   const [previewContent, setPreviewContent] = useState({ current: null, future: null });
   const [loggedInUser, setLoggedInUser] = useState('');
 
@@ -80,8 +17,6 @@ const Home = () => {
     const user = localStorage.getItem('loggedInUser');
     setLoggedInUser(user || '');
   }, []);
-
-
 
   const getImagePath = () => {
     const imagePath = previewContent.current ? require(`../../images/${previewContent.current.imgRef}.jpg`) : null;
@@ -94,13 +29,6 @@ const Home = () => {
   };
 
   const targetId = 'targetId';
-
-  useEffect(() => {
-    const targetElement = document.getElementById(targetId);
-    if (targetElement) {
-      setWell(targetElement.innerText);
-    }
-  }, [targetId]);
 
   useEffect(() => {
     const fetchPreviewContent = async () => {
@@ -119,61 +47,65 @@ const Home = () => {
     fetchPreviewContent();
   }, []);
 
-  
-  useEffect(() => {
-    setWell(document.getElementById(targetId)?.innerText || '');
-  }, [previewContent]);
+  const { darkMode } = useDarkMode();
   return (
     <div>
-      <Header />
-      
-      <FontSizeChanger initialFontSize={16} targetSelector=".home-text" />
+     <div className={`home ${darkMode ? 'dark-mode' : ''} `}> 
+     <Header/>
+     
+            <div className='overview'>
+            <div className="sizeChanger">
+              <FontSizeChanger initialFontSize={16} targetSelector=".home" />
+            </div>
+            <div>
+              <h1>Home</h1>
+            </div>
+            <div>
+            {loggedInUser && <p>Welcome, {loggedInUser}</p>} 
+            </div>
+            <h3>EventEire is a newly established company with the aims to enable everyone the change the chance to visit and enjoy different events, shows and gallerys to there fullest potential in which eveyone can roam freely and expierence the different kinds or art and history in an interactive and fun way.  </h3>
+            </div>
 
+            <div className="content-container">
+              <div className="eventsWrapper">
 
-      <div>
-        <h1>Home</h1>
-      </div>
+                <div className="currentCont">
+                <h2>Currently on show</h2>
+                {previewContent.current && (
+                  <>
+                    <div>{previewContent.current.Title}</div>
+                    <img src={getImagePath()} alt={previewContent.current.imgAlt} title={previewContent.current.imgAlt}/>
+                    <div>{previewContent.current.textContent}</div>
+                    <TextToSpeech text={previewContent.current.textContent} />
+                  </>
+                )}
+                </div>
 
-      <div>
-         {loggedInUser && <p>Welcome, {loggedInUser}</p>} {/* Display the logged-in user */}
-      </div>
+                <div className="futurecont">
+                <h2>What's to come in the future</h2>
+                {previewContent.future && (
+                  <>
+                    <div>{previewContent.future.Title}</div>
+                    <img src={getImagePath2()} alt={previewContent.future.imgAlt} title={previewContent.future.imgAlt} />
+                    <div id={targetId}>{previewContent.future.textContent}</div>
+                    <TextToSpeech text={previewContent.future.textContent} />
+                  </>
+                )}
+                </div>
+              </div>
 
-      <div>
-        <h3>EventEire is a newly established company with the aims to enable those with disabilities</h3>
-      </div>
+              <div className='currentweather'>
+              <Weather/>
+              </div>
+              
+            </div>
+          </div>
 
-      <div className="home-text">possible past and future events</div>
-
-      <div className="eventsWrapper">
-        <div className="currentCont">
-          <h4>Currently on show</h4>
-          {previewContent.current && (
-            <>
-              <div>{previewContent.current.Title}</div>
-              <img src={getImagePath()} alt={previewContent.current.imgAlt} />
-              <div>{previewContent.current.textContent}</div>
-            </>
-          )}
-        </div>
-
-        <div className="futurecont">
-          <h4>What's to come in the future</h4>
-          {previewContent.future && (
-            <>
-              <div>{previewContent.future.Title}</div>
-              <img src={getImagePath2()} alt={previewContent.future.imgAlt} />
-              <div id={targetId}>{previewContent.future.textContent}</div>
-            </>
-          )}
-        </div>
-      </div>
-
-      <TextToSpeech text={well} />
-
-      <div className="home-text">opening times</div>
-    </div>
+          
+    <Footer/>
+    </div> //wrapper
   );
 };
 
-
 export default Home;
+

@@ -1,23 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const FontChanger = ({ initialFontSize, targetSelector }) => {
   const [fontSize, setFontSize] = useState(initialFontSize);
-  const [fontFamily, setFontFamily] = useState('sans-serif');
+  const [fontFamily, setFontFamily] = useState("sans-serif");
 
   const increaseFontSize = () => {
-    const targetElements = document.querySelectorAll(targetSelector);
-    targetElements.forEach((element) => {
-      element.style.fontSize = `${fontSize + 2}px`;
-    });
-    setFontSize(fontSize + 2);
+    if (fontSize + 2 <= 30) {
+      const targetElements = document.querySelectorAll(targetSelector);
+      targetElements.forEach((element) => {
+        element.style.fontSize = `${fontSize + 2}px`;
+      });
+      setFontSize(fontSize + 2);
+    }
   };
 
   const decreaseFontSize = () => {
-    const targetElements = document.querySelectorAll(targetSelector);
-    targetElements.forEach((element) => {
-      element.style.fontSize = `${fontSize - 2}px`;
-    });
-    setFontSize(fontSize - 2);
+    if (fontSize - 2 >= 10) {
+      const targetElements = document.querySelectorAll(targetSelector);
+      targetElements.forEach((element) => {
+        element.style.fontSize = `${fontSize - 2}px`;
+      });
+      setFontSize(fontSize - 2);
+    }
   };
 
   const changeFontFamily = (event) => {

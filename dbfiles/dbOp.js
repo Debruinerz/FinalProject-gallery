@@ -1,68 +1,6 @@
 const config = require('./dbConfig');
 const sql=require("mssql/msnodesqlv8");
-
-
-function getEmployees(callback) {
-    sql.connect(config, function (err) {
-      if (err) {
-        console.log(err);
-        callback(err, null);
-      } else {
-        var request = new sql.Request();
-        request.query("select * from EmployeeDemos", function (err, records) {
-          if (err) {
-            console.log(err);
-            callback(err, null);
-          } else {
-            callback(null, records.recordset);
-          }
-        });
-      }
-    });
-  }
-
-  function addEmployee(firstName, lastName, age, gender, callback) {
-    sql.connect(config, function (err) {
-      if (err) {
-        console.log(err);
-        callback(err, null);
-      } else {
-        var request = new sql.Request();
-        request.query(
-          `INSERT INTO EmployeeDemos (FirstName, LastName, Age, Gender)
-           VALUES ('${firstName}', '${lastName}', '${age}', '${gender}')`,
-          function (err, result) {
-            if (err) {
-              console.log(err);
-              callback(err, null);
-            } else {
-              callback(null, result);
-            }
-          }
-        );
-      }
-    });
-  }
-
-  function deleteEmployee(id, callback) {
-    sql.connect(config, function (err) {
-      if (err) {
-        console.log(err);
-        callback(err, null);
-      } else {
-        var request = new sql.Request();
-        request.query(`DELETE FROM EmployeeDemos WHERE EmployeeID = ${id}`, function (err, result) {
-          if (err) {
-            console.log(err);
-            callback(err, null);
-          } else {
-            callback(null, result);
-          }
-        });
-      }
-    });
-  }
-
+const { promisify } = require('util');
 
     //  Users 
   function addUser(username,password,firstName, lastName, email, dob, phoneNumber, callback) {
@@ -88,14 +26,16 @@ function getEmployees(callback) {
     });
   }
 
+
+  
   function getUser(callback) {
     sql.connect(config, function (err) {
       if (err) {
         console.log(err);
         callback(err, null);
       } else {
-        var request = new sql.Request();
-        request.query("select * from Users", function (err, records) {
+        const request = new sql.Request();
+        request.query('SELECT * FROM Users', function (err, records) {
           if (err) {
             console.log(err);
             callback(err, null);
@@ -194,7 +134,7 @@ function deleteContent(id, callback) {
 }
 
 
-    //   contact us  
+    //  add to contact us  
     function addContact(firstName, lastName, email, text, phoneNumber, callback) {
       sql.connect(config, function (err) {
         if (err) {
@@ -218,7 +158,7 @@ function deleteContent(id, callback) {
       });
     }
 
-    // will eventually show all the details of the contact us
+    // get contacts us 
     function getContact(callback) {
       sql.connect(config, function (err) {
         if (err) {
@@ -281,7 +221,8 @@ function deleteContent(id, callback) {
         }
       });
     }
-    // will be for current content being shown 
+    
+
     function getPreview(callback) {
       sql.connect(config, function (err) {
         if (err) {
@@ -320,7 +261,7 @@ function deleteContent(id, callback) {
       });
     }
     
-    //  admin 
+    // possible add admin 
     function addAdmin( userID, callback) {
       sql.connect(config, function (err) {
         if (err) {
@@ -343,26 +284,9 @@ function deleteContent(id, callback) {
         }
       });
     }
-  
-    function getAdminUser(callback) {
-      sql.connect(config, function (err) {
-        if (err) {
-          console.log(err);
-          callback(err, null);
-        } else {
-          var request = new sql.Request();
-          request.query("select * from Admin", function (err, records) {
-            if (err) {
-              console.log(err);
-              callback(err, null);
-            } else {
-              callback(null, records.recordset);
-            }
-          });
-        }
-      });
-    }
 
+
+    // get admin records
     function getAdmin(callback) {
       sql.connect(config, function (err) {
         if (err) {
@@ -382,7 +306,7 @@ function deleteContent(id, callback) {
       });
     }
   
-  
+  // possible delete admin in future update
     function deleteAdmin(id, callback) {
       sql.connect(config, function (err) {
         if (err) {
@@ -404,7 +328,7 @@ function deleteContent(id, callback) {
   
 
 
-    //update demo 
+    //update preview table
     function updatePreview(previewID, title, textContent, imgRef, imgAlt, callback) {
       sql.connect(config, function (err) {
         if (err) {
@@ -416,6 +340,32 @@ function deleteContent(id, callback) {
             `UPDATE previewContent
              SET Title = '${title}', textContent = '${textContent}', imgRef = '${imgRef}', imgAlt = '${imgAlt}'
              WHERE previewID = ${previewID}`,
+            function (err, result) {
+              if (err) {
+                console.log(err);
+                callback(err, null);
+              } else {
+                callback(null, result);
+              }
+            }
+          );
+        }
+      });
+    }
+
+
+    // upodate dynamic content
+    function updateDynamic(contentID, title, textContent, imgRef, imgAlt, callback) {
+      sql.connect(config, function (err) {
+        if (err) {
+          console.log(err);
+          callback(err, null);
+        } else {
+          var request = new sql.Request();
+          request.query(
+            `UPDATE DynamicContent
+             SET Title = '${title}', textContent = '${textContent}', imgRef = '${imgRef}', imgAlt = '${imgAlt}'
+             WHERE ContentID = ${contentID}`,
             function (err, result) {
               if (err) {
                 console.log(err);
@@ -450,30 +400,208 @@ function deleteContent(id, callback) {
       });
     }
 
-
-    //login
-    function login(username, password) {
-      return new Promise((resolve, reject) => {
-        sql.connect(config, function (err) {
-          if (err) {
-            console.log(err);
-            reject(err);
-          } else {
-            var request = new sql.Request();
-            request.query(
-              `SELECT * FROM Users WHERE Username = '${username}' AND Password = '${password}'`,
-              function (err, recordset) {
-                if (err) {
-                  console.log(err);
-                  reject(err);
-                } else {
-                  resolve(recordset.recordset[0]);
-                }
+      // login
+  function login(username, password, callback) {
+      sql.connect(config, function (err) {
+        if (err) {
+          console.log(err);
+          callback(err, null);
+        } else {
+          const request = new sql.Request();
+          const query = `SELECT * FROM Users  WHERE Username = '${username}' AND Password = '${password}';`;
+          
+          request.query(query, function (err, records) {
+            if (err) {
+              console.log(err);
+              callback(err, null);
+            } else {
+              if (records.recordset.length > 0) {
+                callback(null, { success: true, message: 'Login successful' });
+              } else {
+                callback(null, { success: false, message: 'Invalid credentials' });
               }
-            );
-          }
-        });
+            }
+          });
+        }
       });
-    }
-  
-   module.exports = {login,getContentByTitle ,updatePreview, getEmployees , addEmployee, deleteEmployee,addUser,deleteUser, addPreview, deletePreview,addContent,deleteContent,addContact,deleteContactUs, getContact,getUser,getPreview,getContent,getAdmin,getAdminUser,deleteAdmin};
+    } 
+
+
+    
+      // Function to get the user ID based on the username
+  function getUserIdByUsername(username) {
+    return new Promise((resolve, reject) => {
+      sql.connect(config, function (err) {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else {
+          var request = new sql.Request();
+          request.query(`SELECT UserID FROM Users WHERE Username = '${username}'`, function (err, recordset) {
+            if (err) {
+              console.log(err);
+              reject(err);
+            } else {
+              const userId = recordset.recordset[0]?.UserID || null;
+              resolve(userId);
+            }
+          });
+        }
+      });
+    });
+  }
+
+  // Function to check if the user ID is an admin
+  function checkAdmin(userId) {
+    return new Promise((resolve, reject) => {
+      sql.connect(config, function (err) {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else {
+          var request = new sql.Request();
+          request.query(`SELECT 1 FROM Admin WHERE UserID = ${userId}`, function (err, recordset) {
+            if (err) {
+              console.log(err);
+              reject(err);
+            } else {
+              const isAdmin = recordset.recordset.length > 0;
+              resolve(isAdmin);
+            }
+          });
+        }
+      });
+    });
+  }
+
+  function updateUserPassword(username,phoneNumber, newPassword, callback) {
+    sql.connect(config, function (err) {
+      if (err) {
+        console.log(err);
+        callback(err, null);
+      } else {
+        var request = new sql.Request();
+        request.query(
+          `UPDATE Users
+          SET Password = '${newPassword}'
+          WHERE Username = '${username}' AND PhoneNumber = '${phoneNumber}'`, 
+          function (err, result) {
+            if (err) {
+              console.log(err);
+              callback(err, null);
+            } else {
+              callback(null, result);
+            }
+          }
+        );
+      }
+    });
+  }
+
+  module.exports = {updateUserPassword,checkAdmin,getUserIdByUsername, login,getContentByTitle ,updatePreview,updateDynamic,addUser,deleteUser, addPreview, deletePreview,addContent,deleteContent,addContact,deleteContactUs, getContact,getUser,getPreview,getContent,getAdmin,deleteAdmin};
+
+
+       //login
+    // function login(username, password) {
+    //   return new Promise((resolve, reject) => {
+    //     sql.connect(config, function (err) {
+    //       if (err) {
+    //         console.log(err);
+    //         reject(err);
+    //       } else {
+    //         var request = new sql.Request();
+    //         request.query(
+    //           `SELECT * FROM Users WHERE Username = '${username}' AND Password = '${password}'`,
+    //           function (err, recordset) {
+    //             if (err) {
+    //               console.log(err);
+    //               reject(err);
+    //             } else {
+    //               resolve(recordset.recordset[0]);
+    //             }
+    //           }
+    //         );
+    //       }
+    //     });
+    //   });
+    // }
+
+      // function getUser(callback) {
+  //   sql.connect(config, function (err) {
+  //     if (err) {
+  //       console.log(err);
+  //       callback(err, null);
+  //     } else {
+  //       var request = new sql.Request();
+  //       request.query("select * from Users", function (err, records) {
+  //         if (err) {
+  //           console.log(err);
+  //           callback(err, null);
+  //         } else {
+  //           callback(null, records.recordset);
+  //         }
+  //       });
+  //     }
+  //   });
+  // }
+
+  // function getEmployees(callback) {
+//     sql.connect(config, function (err) {
+//       if (err) {
+//         console.log(err);
+//         callback(err, null);
+//       } else {
+//         var request = new sql.Request();
+//         request.query("select * from EmployeeDemos", function (err, records) {
+//           if (err) {
+//             console.log(err);
+//             callback(err, null);
+//           } else {
+//             callback(null, records.recordset);
+//           }
+//         });
+//       }
+//     });
+//   }
+
+//   function addEmployee(firstName, lastName, age, gender, callback) {
+//     sql.connect(config, function (err) {
+//       if (err) {
+//         console.log(err);
+//         callback(err, null);
+//       } else {
+//         var request = new sql.Request();
+//         request.query(
+//           `INSERT INTO EmployeeDemos (FirstName, LastName, Age, Gender)
+//            VALUES ('${firstName}', '${lastName}', '${age}', '${gender}')`,
+//           function (err, result) {
+//             if (err) {
+//               console.log(err);
+//               callback(err, null);
+//             } else {
+//               callback(null, result);
+//             }
+//           }
+//         );
+//       }
+//     });
+//   }
+
+//   function deleteEmployee(id, callback) {
+//     sql.connect(config, function (err) {
+//       if (err) {
+//         console.log(err);
+//         callback(err, null);
+//       } else {
+//         var request = new sql.Request();
+//         request.query(`DELETE FROM EmployeeDemos WHERE EmployeeID = ${id}`, function (err, result) {
+//           if (err) {
+//             console.log(err);
+//             callback(err, null);
+//           } else {
+//             callback(null, result);
+//           }
+//         });
+//       }
+//     });
+//   }

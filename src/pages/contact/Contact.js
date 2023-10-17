@@ -1,10 +1,13 @@
-
-
 import React, { useState } from 'react';
 import Header from '../../components/header/Header';
 import Footer from '../../components/footer/Footer';
+import { useDarkMode } from '../../pages/darkmode/DarkMode';
+import './contact.css';
+import CryptoJS from "crypto-js";
+const secretPass = 'XkhZG4fW2t2W';
 
 const Contact = () => {
+  
   const [contact, setContact] = useState({
     firstName: '',
     lastName: '',
@@ -17,17 +20,31 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
+
+
+      // encrypt
+
+      const encryptContact = {
+        firstName: CryptoJS.AES.encrypt(contact.firstName, secretPass).toString(),
+        lastName: CryptoJS.AES.encrypt(contact.lastName, secretPass).toString(),
+        email: CryptoJS.AES.encrypt(contact.email, secretPass).toString(),
+        text: CryptoJS.AES.encrypt(contact.text, secretPass).toString(),
+        phoneNumber: CryptoJS.AES.encrypt(contact.phoneNumber, secretPass).toString(),
+      };
+
       try {
         const response = await fetch('http://localhost:5000/api/contact', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(contact),
+          body: JSON.stringify(encryptContact),
         });
+
+
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        const result = await response.json();
-        console.log('New contact added:', result);
+        //const result = await response.json();
+        console.log('New contact added:', contact);
         setIsSubmitted(true);
         setContact({
           firstName: '',
@@ -47,10 +64,16 @@ const Contact = () => {
     setContact({ ...contact, [name]: value });
   };
 
+  const NameChange = (e) => {
+    const { name, value } = e.target;
+    const newValue = value.replace(/[^A-Za-z]/g, '');
+    setContact({ ...contact, [name]: newValue });
+  };
+
   const validateForm = () => {
     const { firstName, lastName, email, text, phoneNumber } = contact;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const forbiddenCharsRegex = /["',`]/;
+    const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const forbiddenChars = /["',`]/;
 
     if (
       !firstName.trim() ||
@@ -62,7 +85,7 @@ const Contact = () => {
       alert('All fields are required');
       return false;
     }
-    if (!emailRegex.test(email)) {
+    if (!emailReg.test(email)) {
       alert('Invalid email format');
       return false;
     }
@@ -79,25 +102,28 @@ const Contact = () => {
       return false;
     }
     if (
-      forbiddenCharsRegex.test(firstName) ||
-      forbiddenCharsRegex.test(lastName) ||
-      forbiddenCharsRegex.test(text)
+      forbiddenChars.test(firstName) ||
+      forbiddenChars.test(lastName) ||
+      forbiddenChars.test(text)
     ) {
       alert('Invalid characters detected. Please remove any quotes (", \', `)');
       return false;
     }
-
     return true;
   };
 
-  const handleModalClose = () => {
+  const handleClose = () => {
     setIsSubmitted(false);
   };
+
+  const { darkMode } = useDarkMode();
 
   return (
     <div>
       <Header />
+     <div className={`wrap ${darkMode ? 'dark-mode' : ''}`}> 
       <br/>
+        <h2>Contact us</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="firstName">First Name:</label>
@@ -105,7 +131,7 @@ const Contact = () => {
             type="text"
             name="firstName"
             value={contact.firstName}
-            onChange={handleChange}
+            onChange={NameChange}
             required
           />
         </div>
@@ -115,7 +141,7 @@ const Contact = () => {
             type="text"
             name="lastName"
             value={contact.lastName}
-            onChange={handleChange}
+            onChange={NameChange}
             required
           />
         </div>
@@ -148,20 +174,20 @@ const Contact = () => {
             onChange={handleChange}
             required
           />
-          <small>(Enter 11-digit phone number without spaces or dashes)</small>
         </div>
         <button type="submit">Submit</button>
       </form>
       {isSubmitted && (
-        <div className="modal">
-          <div className="modal-content">
+        <div >
+          <div >
             <h3>Submission Successful</h3>
             <p>Your form has been submitted successfully.</p>
-            <button onClick={handleModalClose}>Close</button>
+            <button onClick={handleClose}>Close</button>
           </div>
         </div>
       )}
-
+      
+      </div>
       <Footer/>
     </div>
   );

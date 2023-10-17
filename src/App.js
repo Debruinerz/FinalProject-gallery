@@ -8,6 +8,8 @@ import DataContent from './pages/dynamic/DataContent'; // Update the import
 import Admin from "./pages/admin/Admin"
 
 
+
+
 function App() {
   return (
     <BrowserRouter>

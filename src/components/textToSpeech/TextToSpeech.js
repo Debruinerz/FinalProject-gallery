@@ -4,9 +4,9 @@ const TextToSpeech = ({ text }) => {
   const [pitch, setPitch] = useState(1);
   const [rate, setRate] = useState(1);
   const [voices, setVoices] = useState([]);
-  const [selectedVoiceURI, setSelectedVoiceURI] = useState('');
+  const [Voice, setVoice] = useState('');
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [persistedVoiceURI, setPersistedVoiceURI] = useState('');
+  const [changeVoice, setChangeVoice] = useState('');
 
   const handlePitchChange = (event) => {
     setPitch(event.target.value);
@@ -17,13 +17,13 @@ const TextToSpeech = ({ text }) => {
   };
 
   const handleVoiceChange = (event) => {
-    const voiceURI = event.target.value;
-    setSelectedVoiceURI(voiceURI);
-    setPersistedVoiceURI(voiceURI);
+    const voice = event.target.value;
+    setVoice(voice);
+    setChangeVoice(voice);
   };
 
   const handleSpeak = () => {
-    if (text && selectedVoiceURI) {
+    if (text && Voice) {
       if (isSpeaking) {
         speechSynthesis.cancel();
         setIsSpeaking(false);
@@ -31,8 +31,8 @@ const TextToSpeech = ({ text }) => {
         speak();
       }
     } else {
-      setSelectedVoiceURI('');
-      setPersistedVoiceURI('');
+      setVoice('');
+      setChangeVoice('');
     }
   };
 
@@ -41,19 +41,19 @@ const TextToSpeech = ({ text }) => {
   }, []);
 
   const speak = useCallback(() => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.pitch = pitch;
-    utterance.rate = rate;
-    if (selectedVoiceURI) {
-      const selectedVoice = voices.find((voice) => voice.voiceURI === selectedVoiceURI);
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.pitch = pitch;
+    utt.rate = rate;
+    if (Voice) {
+      const selectedVoice = voices.find((voice) => voice.name === Voice);
       if (selectedVoice) {
-        utterance.voice = selectedVoice;
+        utt.voice = selectedVoice;
       }
     }
-    utterance.addEventListener('end', handleSpeechEnd);
+    utt.addEventListener('end', handleSpeechEnd);
     setIsSpeaking(true);
-    speechSynthesis.speak(utterance);
-  }, [text, pitch, rate, selectedVoiceURI, voices, handleSpeechEnd]);
+    speechSynthesis.speak(utt);
+  }, [text, pitch, rate, Voice, voices, handleSpeechEnd]);
 
   useEffect(() => {
     const handleVoicesChanged = () => {
@@ -63,22 +63,20 @@ const TextToSpeech = ({ text }) => {
 
     speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
 
-    // Fetch the initial voices
     const availableVoices = speechSynthesis.getVoices();
     setVoices(availableVoices);
 
-    // Restore the persisted voice URI
-    if (persistedVoiceURI) {
-      setSelectedVoiceURI(persistedVoiceURI);
+    if (changeVoice) {
+      setVoice(changeVoice);
     }
 
     return () => {
       speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
     };
-  }, [persistedVoiceURI]);
+  }, [changeVoice]);
 
   return (
-    <div>
+    <div >
       <div>
         <label htmlFor="pitch">Pitch:</label>
         <input
@@ -107,10 +105,10 @@ const TextToSpeech = ({ text }) => {
       </div>
       <div>
         <label htmlFor="voice">Voice:</label>
-        <select id="voice" value={selectedVoiceURI} onChange={handleVoiceChange}>
-          <option value="">Default Voice</option>
+        <select id="voice" value={Voice} onChange={handleVoiceChange} style={{ width: '80%' }}>
+          <option value="">Select Voice</option>
           {voices.map((voice) => (
-            <option key={voice.voiceURI} value={voice.voiceURI}>
+            <option key={voice.name} value={voice.name}>
               {`${voice.name} (${voice.lang})`}
             </option>
           ))}

@@ -4,6 +4,8 @@ import Header from '../../components/header/Header';
 import Footer from '../../components/footer/Footer';
 import FontSizeChanger from '../../components/fontSizeChanger/FontSizeChanger';
 import TextToSpeech from '../../components/textToSpeech/TextToSpeech';
+import './datacontent.css';
+import { useDarkMode } from '../../pages/darkmode/DarkMode';
 
 const DataContent = () => {
   const { title } = useParams();
@@ -11,6 +13,7 @@ const DataContent = () => {
   const [TtSVisible, setTtSVisible] = useState(false);
   const [well, setWell] = useState('');
   const targetId = 'targetId';
+  const { darkMode } = useDarkMode();
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -37,12 +40,17 @@ const DataContent = () => {
     setWell(document.getElementById(targetId)?.innerText || '');
   }, [content]);
 
+  const getImagePath = () => {
+    const imagePath = content ? require(`../../images/${content.imgRef}.jpg`) : null;
+    return imagePath;
+  };
+
   if (content === null) {
     console.log('Fetching content for title:', title);
     return (
       <div>
         <Header />
-        <div>Loading...</div>
+        <div> <h1>Error,</h1> There is no imformation availabe based on the title presented, please try again</div>
         <Footer />
       </div>
     );
@@ -52,21 +60,26 @@ const DataContent = () => {
     setTtSVisible(!TtSVisible);
   };
 
-
+ 
   return (
-    <div>
+    <div >
       <Header />
-      <h1>Dynamic Content</h1>
-      <p>Title: {content.Title}</p>
-      <img src={content.imgRef} alt={content.imgAlt} />
-      <p id={targetId}>{content.textContent}</p>
-      <div>
-        {TtSVisible && <TextToSpeech text={well} />}
-        <button onClick={ToggleTextToSpeech}>
-          {TtSVisible ? 'Hide' : 'Show'} Text to Speech(main text content)
-        </button>
+      <div className={`box ${darkMode ? 'dark-mode' : ''} `}> 
+      <div className="sizeChanger">
+            <FontSizeChanger initialFontSize={16} targetSelector=".box" />
       </div>
-      
+      <div className="content">
+        <h1>Title: {content.Title}</h1>
+        <img src={getImagePath()} alt={content.imgAlt} />
+        <p id={targetId}>{content.textContent}</p>
+        <div className="text-to-speech">
+          {TtSVisible && <TextToSpeech text={well} />}
+          <button onClick={ToggleTextToSpeech}>
+            {TtSVisible ? 'Hide' : 'Show'} Text to Speech (main text content)
+          </button>
+        </div>
+      </div>
+      </div>
       <Footer />
     </div>
   );
